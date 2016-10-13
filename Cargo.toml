@@ -1,0 +1,6 @@
+[package]
+name = "rust-collections"
+version = "0.1.0"
+authors = ["Jim D'Angelo", "Funclobile, Inc."]
+
+[dependencies]
