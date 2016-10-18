@@ -1,5 +1,5 @@
 [package]
-name = "rust-collections"
+name = "coll"
 version = "0.1.0"
 authors = ["Jim D'Angelo", "Funclobile, Inc."]
 description = "Some basic (persistent) collections"
