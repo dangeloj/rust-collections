@@ -48,17 +48,17 @@ impl<T> RbTree<T>
     fn balance(self) -> Self {
         if let RbTree::T(Color::Black, ref l, ref x, ref r) = self {
 
-            if let &RbTree::T(Color::Red, ref l2, ref x2, ref r2) = l.clone().as_ref() {
+            if let &RbTree::T(Color::Red, ref l2, ref x2, ref r2) = l.as_ref() {
 
                 // Black (Red (Red, _), _)
-                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = l2.clone().as_ref() {
+                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = l2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l3.clone(), x3.clone(), r3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, r2.clone(), x.clone(), r.clone()));
                     return RbTree::T(Color::Red, left, x2.clone(), right);
                 }
 
                 // Black (Red (_, Red), _)
-                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = r2.clone().as_ref() {
+                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = r2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l2.clone(), x2.clone(), l3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, r3.clone(), x.clone(), r.clone()));
                     return RbTree::T(Color::Red, left, x3.clone(), right);
@@ -66,17 +66,17 @@ impl<T> RbTree<T>
 
             }
 
-            if let &RbTree::T(Color::Red, ref l2, ref x2, ref r2) = r.clone().as_ref() {
+            if let &RbTree::T(Color::Red, ref l2, ref x2, ref r2) = r.as_ref() {
 
                 // Black (l, x, (Red (Red, _)))
-                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = l2.clone().as_ref() {
+                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = l2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l.clone(), x.clone(), l3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, r3.clone(), x2.clone(), r2.clone()));
                     return RbTree::T(Color::Red, left, x3.clone(), right);
                 }
 
                 // Black (l, x, (Red (r2, x2, Red (l3, x3, r3))))
-                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = r2.clone().as_ref() {
+                if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = r2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l.clone(), x.clone(), l3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, l2.clone(), x3.clone(), r3.clone()));
                     return RbTree::T(Color::Red, left, x2.clone(), right);
@@ -112,7 +112,7 @@ impl<T> RbTree<T>
                     true
                 }
             }
-            _ => false,
+            &RbTree::E => false,
         }
     }
 
@@ -161,6 +161,43 @@ impl<T> RbTree<T>
             RbTree::T(Color::Black, left, y, right)
         } else {
             unreachable!()
+        }
+    }
+
+    /// Returns the current value in the tree, if it exists.
+    /// `Some(T)` if it exists, `None` otherwise.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use coll::persistent::RbTree;
+    /// let tree = RbTree::new().insert(1);
+    /// let one = tree.get().unwrap();
+    /// assert_eq!(*one, 1);
+    /// ```
+    pub fn get(&self) -> Option<&T> {
+        match self {
+            &RbTree::E => None,
+            &RbTree::T(_, _, ref x, _) => Some (&**x)
+        }
+    }
+
+    /// Returns `true` if the collection is empty.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use coll::persistent::RbTree;
+    /// let tree: RbTree<i32> = RbTree::new();
+    /// assert!(tree.is_empty());
+    ///
+    /// let tree = tree.insert(1);
+    /// assert!(tree.is_empty() == false);
+    /// ```
+    pub fn is_empty(&self) -> bool {
+        match self {
+            &RbTree::E => true,
+            _ => false
         }
     }
 }
