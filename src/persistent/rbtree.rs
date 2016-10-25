@@ -50,14 +50,14 @@ impl<T> RbTree<T>
 
             if let &RbTree::T(Color::Red, ref l2, ref x2, ref r2) = l.as_ref() {
 
-                // Black (Red (Red, _), _)
+                // Black (Red (Red (l3, x3, r3), x2, r2), x, r)
                 if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = l2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l3.clone(), x3.clone(), r3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, r2.clone(), x.clone(), r.clone()));
                     return RbTree::T(Color::Red, left, x2.clone(), right);
                 }
 
-                // Black (Red (_, Red), _)
+                // Black (Red (l2, x2, Red (l3, x3, r3)), x, r)
                 if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = r2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l2.clone(), x2.clone(), l3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, r3.clone(), x.clone(), r.clone()));
@@ -68,17 +68,17 @@ impl<T> RbTree<T>
 
             if let &RbTree::T(Color::Red, ref l2, ref x2, ref r2) = r.as_ref() {
 
-                // Black (l, x, (Red (Red, _)))
+                // Black (l, x, (Red (Red (l3, x3, r3), x2, r2)))
                 if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = l2.as_ref() {
                     let left = Rc::new(RbTree::T(Color::Black, l.clone(), x.clone(), l3.clone()));
                     let right = Rc::new(RbTree::T(Color::Black, r3.clone(), x2.clone(), r2.clone()));
                     return RbTree::T(Color::Red, left, x3.clone(), right);
                 }
 
-                // Black (l, x, (Red (r2, x2, Red (l3, x3, r3))))
+                // Black (l, x, (Red (l2, x2, Red (l3, x3, r3))))
                 if let &RbTree::T(Color::Red, ref l3, ref x3, ref r3) = r2.as_ref() {
-                    let left = Rc::new(RbTree::T(Color::Black, l.clone(), x.clone(), l3.clone()));
-                    let right = Rc::new(RbTree::T(Color::Black, l2.clone(), x3.clone(), r3.clone()));
+                    let left = Rc::new(RbTree::T(Color::Black, l.clone(), x.clone(), l2.clone()));
+                    let right = Rc::new(RbTree::T(Color::Black, l3.clone(), x3.clone(), r3.clone()));
                     return RbTree::T(Color::Red, left, x2.clone(), right);
                 }
             }
@@ -346,11 +346,11 @@ fn insert_with_7_items_builds_the_correct_tree() {
                             .insert(7);
 
     let one = Rc::new(RbTree::T(Color::Black, empty.clone(), Rc::new(1), empty.clone()));
-    let five = Rc::new(RbTree::T(Color::Black, empty.clone(), Rc::new(5), empty.clone()));
-    let two = Rc::new(RbTree::T(Color::Black, one, Rc::new(2), five));
     let three = Rc::new(RbTree::T(Color::Black, empty.clone(), Rc::new(3), empty.clone()));
+    let two = Rc::new(RbTree::T(Color::Black, one, Rc::new(2), three));
+    let five = Rc::new(RbTree::T(Color::Black, empty.clone(), Rc::new(5), empty.clone()));
     let seven = Rc::new(RbTree::T(Color::Black, empty.clone(), Rc::new(7), empty.clone()));
-    let six = Rc::new(RbTree::T(Color::Black, three, Rc::new(6), seven));
+    let six = Rc::new(RbTree::T(Color::Black, five, Rc::new(6), seven));
     let expected = RbTree::T(Color::Black, two, Rc::new(4), six);
 
     assert_eq!(tree, expected);
@@ -366,9 +366,13 @@ fn insert_doesnt_allow_duplicates() {
 
 #[test]
 fn contains_finds_all_elements() {
-    let tree = RbTree::new().insert(1).insert(2).insert(3).insert(4).insert(5);
-    let contains_all = tree.contains(1) && tree.contains(2) && tree.contains(3) &&
-                       tree.contains(4) && tree.contains(5);
+    let tree = RbTree::new().insert(1).insert(2).insert(3).insert(4).insert(5).insert(6).insert(7);
 
-    assert!(contains_all);
+    assert!(tree.contains(1));
+    assert!(tree.contains(2));
+    assert!(tree.contains(3));
+    assert!(tree.contains(4));
+    assert!(tree.contains(5));
+    assert!(tree.contains(6));
+    assert!(tree.contains(7));
 }
