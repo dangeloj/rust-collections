@@ -9,5 +9,5 @@ matrix:
 script: bash ./deploy.sh
 env:
     global:
-    - ENCRYPTION_LABEL: "725a3893f807"
+    - ENCRYPTION_LABEL: "d464034050c6"
     - COMMIT_AUTHOR_EMAIL: "jim@funclobile.com"
