@@ -6,3 +6,8 @@ rust:
 matrix:
     allow_failures:
         - rust: nightly
+script: bash ./deploy.sh
+env:
+    global:
+    - ENCRYPTION_LABEL: "725a3893f807"
+    - COMMIT_AUTHOR_EMAIL: "jim@funclobile.com"
