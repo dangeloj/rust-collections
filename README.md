@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/dangeloj/rust-collections.svg?branch=master)](https://travis-ci.org/dangeloj/rust-collections)
-[![Docs Status](https://docs.rs/coll/badge.svg)](https://docs.rs/coll/badge.svg)
+[![Docs Status](https://docs.rs/coll/badge.svg)](https://docs.rs/coll)
 [![Cargo Status](https://img.shields.io/crates/v/coll.svg)](https://crates.io/crates/coll)
 
 # coll

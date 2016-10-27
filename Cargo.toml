@@ -1,9 +1,13 @@
 [package]
 name = "coll"
 version = "0.1.0"
-authors = ["Jim D'Angelo", "Funclobile, Inc."]
+authors = ["Jim D'Angelo <jim@funclobile.com>", "Funclobile, Inc."]
 description = "Some basic (persistent) collections"
 license-file = "LICENSE"
+readme = "README.md"
+keywords = ["tree", "trees", "collections", "persistent"]
+documentation = "https://docs.rs/coll"
+homepage = "https://github.com/dangeloj/rust-collections"
 repository = "https://github.com/dangeloj/rust-collections"
 
 [dependencies]
