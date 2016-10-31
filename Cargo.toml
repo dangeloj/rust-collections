@@ -1,6 +1,6 @@
 [package]
 name = "coll"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Jim D'Angelo <jim@funclobile.com>", "Funclobile, Inc."]
 description = "Some basic (persistent) collections"
 license-file = "LICENSE"
