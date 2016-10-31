@@ -32,6 +32,7 @@ enum Tree<T: PartialEq + PartialOrd> {
 /// The iterator stores the left children in a stack, using O(log n) space.
 #[derive(Debug, Clone)]
 pub struct Iter<'a, T: 'a + PartialEq + PartialOrd> {
+    len: usize,
     lefts: Box<Vec<&'a Tree<T>>>,
 }
 
@@ -50,9 +51,9 @@ fn get_lefts<T: PartialOrd + PartialEq>(tree: &Tree<T>) -> Vec<&Tree<T>> {
 }
 
 impl<'a, T: 'a + PartialEq + PartialOrd> Iter<'a, T> {
-    fn new(tree: &Tree<T>) -> Iter<T> {
-        let lefts = Box::new(get_lefts(tree));
-        Iter { lefts: lefts }
+    fn new(wrapper: &RbTree<T>) -> Iter<T> {
+        let lefts = Box::new(get_lefts(wrapper.tree.as_ref()));
+        Iter { lefts: lefts, len: wrapper.len }
     }
 }
 
@@ -64,9 +65,14 @@ impl<'a, T: 'a + PartialEq + PartialOrd> Iterator for Iter<'a, T> {
             None | Some(&Tree::E) => None,
             Some(&Tree::T(_, _, ref x, ref right)) => {
                 self.lefts.append(&mut get_lefts(right.as_ref()));
+                self.len -= 1;
                 Some(x.as_ref())
             }
         }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.len, Some(self.len))
     }
 }
 
@@ -162,7 +168,7 @@ impl<T: PartialEq + PartialOrd> RbTree<T> {
     /// assert_eq!(iter.next(), None);
     /// ```
     pub fn to_iter(&self) -> Iter<T> {
-        Iter::new(self.tree.as_ref())
+        Iter::new(self)
     }
 }
 
