@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use std::rc::Rc;
 use std::cmp::PartialEq;
+use std::rc::Rc;
 
 /// The color of the node in our red-black Tree.
 #[derive(Debug, Clone)]
@@ -20,11 +20,54 @@ type Node<T> = Rc<Tree<T>>;
 
 /// The tree structure for our red-black tree.
 #[derive(Debug, Clone)]
-pub enum Tree<T: PartialEq + PartialOrd> {
+enum Tree<T: PartialEq + PartialOrd> {
     /// An empty leaf node
     E,
     /// A node with a value that points to a left and right node in our `Tree`
     T(Color, Node<T>, Rc<T>, Node<T>),
+}
+
+/// Iterator for RbTree that walks through the tree.
+///
+/// The iterator stores the left children in a stack, using O(log n) space.
+#[derive(Debug, Clone)]
+pub struct Iter<'a, T: 'a + PartialEq + PartialOrd> {
+    lefts: Box<Vec<&'a Tree<T>>>,
+}
+
+fn get_lefts<T: PartialOrd + PartialEq>(tree: &Tree<T>) -> Vec<&Tree<T>> {
+    let mut lefts = Vec::new();
+    let mut curr = tree;
+
+    while *curr != Tree::E {
+        lefts.push(curr);
+        if let &Tree::T(_, ref l, _, _) = curr {
+            curr = l.as_ref();
+        }
+    }
+
+    lefts
+}
+
+impl<'a, T: 'a + PartialEq + PartialOrd> Iter<'a, T> {
+    fn new(tree: &Tree<T>) -> Iter<T> {
+        let lefts = Box::new(get_lefts(tree));
+        Iter { lefts: lefts }
+    }
+}
+
+impl<'a, T: 'a + PartialEq + PartialOrd> Iterator for Iter<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.lefts.pop() {
+            None | Some(&Tree::E) => None,
+            Some(&Tree::T(_, _, ref x, ref right)) => {
+                self.lefts.append(&mut get_lefts(right.as_ref()));
+                Some(x.as_ref())
+            }
+        }
+    }
 }
 
 impl<T: PartialEq + PartialOrd> RbTree<T> {
@@ -95,6 +138,31 @@ impl<T: PartialEq + PartialOrd> RbTree<T> {
     /// ```
     pub fn is_empty(&self) -> bool {
         self.len == 0
+    }
+
+    /// Returns an in-order iterator over the nodes in the tree.
+    ///
+    /// The iterator uses O(log n) space for node traversal.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use coll::persistent::RbTree;
+    /// let tree = RbTree::new().insert(4).insert(2).insert(1).insert(3)
+    ///                         .insert(8).insert(6).insert(5).insert(7);
+    /// let mut iter = tree.to_iter();
+    /// assert_eq!(iter.next(), Some(&1));
+    /// assert_eq!(iter.next(), Some(&2));
+    /// assert_eq!(iter.next(), Some(&3));
+    /// assert_eq!(iter.next(), Some(&4));
+    /// assert_eq!(iter.next(), Some(&5));
+    /// assert_eq!(iter.next(), Some(&6));
+    /// assert_eq!(iter.next(), Some(&7));
+    /// assert_eq!(iter.next(), Some(&8));
+    /// assert_eq!(iter.next(), None);
+    /// ```
+    pub fn to_iter(&self) -> Iter<T> {
+        Iter::new(self.tree.as_ref())
     }
 }
 
