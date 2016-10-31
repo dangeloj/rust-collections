@@ -156,7 +156,7 @@ impl<T: PartialEq + PartialOrd> RbTree<T> {
     /// use coll::persistent::RbTree;
     /// let tree = RbTree::new().insert(4).insert(2).insert(1).insert(3)
     ///                         .insert(8).insert(6).insert(5).insert(7);
-    /// let mut iter = tree.to_iter();
+    /// let mut iter = tree.iter();
     /// assert_eq!(iter.next(), Some(&1));
     /// assert_eq!(iter.next(), Some(&2));
     /// assert_eq!(iter.next(), Some(&3));
@@ -167,7 +167,7 @@ impl<T: PartialEq + PartialOrd> RbTree<T> {
     /// assert_eq!(iter.next(), Some(&8));
     /// assert_eq!(iter.next(), None);
     /// ```
-    pub fn to_iter(&self) -> Iter<T> {
+    pub fn iter(&self) -> Iter<T> {
         Iter::new(self)
     }
 }
